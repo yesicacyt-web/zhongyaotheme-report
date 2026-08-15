@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>灵感星图 | 让每一次表达，都在这里留下一颗闪烁的星星</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1a1040 0%, #2d1b69 30%, #1b2a5e 60%, #0f1d3a 100%);
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Serif SC", serif;
+  overflow-x: hidden;
+  color: #fff;
+}
+
+/* ========== 顶部 ========== */
+.sky-title {
+  text-align: center;
+  padding: 36px 20px 8px;
+  color: #FEF3C7;
+  font-size: 26px;
+  font-weight: 300;
+  letter-spacing: 6px;
+  text-shadow: 0 0 20px rgba(252,211,77,0.3);
+}
+.sky-subtitle {
+  text-align: center;
+  color: rgba(252,211,77,0.6);
+  font-size: 13px;
+  margin-bottom: 20px;
+  letter-spacing: 3px;
+}
+
+/* ========== 星空画布 ========== */
+.star-field {
+  width: 94%;
+  max-width: 1100px;
+  height: 62vh;
+  margin: 0 auto;
+  position: relative;
+  border-bottom: 1px dashed rgba(252,211,77,0.15);
+  overflow: hidden;
+}
+
+.bg-twinkle {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  animation: bgTwinkle 3s ease-in-out infinite;
+}
+@keyframes bgTwinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.8; }
+}
+
+/* ========== 星星 ========== */
+.star {
+  position: absolute;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), filter 0.3s ease;
+  animation: bloom 1.2s ease-out forwards, starFloat 4s ease-in-out infinite;
+  opacity: 0;
+  bottom: 0;
+  transform-origin: center bottom;
+}
+.star:hover {
+  transform: scale(1.25);
+  filter: drop-shadow(0 0 14px rgba(252,211,77,0.7));
+}
+.star.featured {
+  animation: bloom 1.2s ease-out forwards, starFloat 4s ease-in-out infinite, twinkle 2.5s ease-in-out infinite;
+}
+.star.featured::after {
+  content: "✨";
+  position: absolute;
+  top: -10px; right: -6px;
+  font-size: 14px;
+  animation: twinkle 1.5s ease-in-out infinite;
+}
+
+@keyframes bloom {
+  0% { opacity: 0; transform: translateY(30px) scale(0.3); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes starFloat {
+  0%, 100% { margin-bottom: 0; }
+  50% { margin-bottom: 6px; }
+}
+@keyframes twinkle {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(252,211,77,0.5)); }
+  50% { filter: drop-shadow(0 0 16px rgba(255,255,255,0.9)); }
+}
+
+.star svg { display: block; }
+
+/* ========== 卡片 ========== */
+.quote-modal {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.92);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  padding: 32px 36px;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  max-width: 460px;
+  width: 92%;
+  max-height: 85vh;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.35s cubic-bezier(.4,0,.2,1);
+  z-index: 100;
+  color: #1f2937;
+}
+.quote-modal.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.info-module {
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.info-module:last-of-type { border-bottom: none; }
+.module-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #D97706;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+.module-value {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #374151;
+}
+.module-value.name { font-family: "Noto Serif SC", serif; font-size: 22px; color: #92400E; font-weight: 600; }
+.module-value.report { font-family: "Noto Serif SC", serif; font-size: 16px; color: #B45309; }
+.module-value.quote {
+  background: rgba(252,211,77,0.06);
+  border-left: 3px solid #FCD34D;
+  padding: 12px 14px;
+  border-radius: 0 10px 10px 0;
+  font-style: italic;
+  font-size: 15px;
+  color: #1f2937;
+  line-height: 1.8;
+}
+.empty-hint { color: #c0c0c0; font-style: italic; font-size: 13px; }
+
+/* 文件列表 */
+.file-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.file-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(252,211,77,0.08);
+  border-radius: 8px;
+  font-size: 12px;
+  color: #92400E;
+}
+.file-item-name { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-item-actions { display: flex; gap: 4px; flex-shrink: 0; margin-left: 8px; }
+.file-action-btn {
+  padding: 2px 8px; border-radius: 4px; font-size: 11px;
+  border: 1px solid rgba(252,211,77,0.3); background: transparent;
+  color: #B45309; cursor: pointer; transition: all .2s;
+}
+.file-action-btn:hover { background: rgba(252,211,77,0.15); }
+.file-action-btn.remove { color: #dc2626; border-color: rgba(220,38,38,0.2); }
+.file-action-btn.remove:hover { background: rgba(220,38,38,0.08); }
+
+.upload-area {
+  border: 1.5px dashed rgba(252,211,77,0.35);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .3s, background .3s;
+  margin-top: 6px;
+}
+.upload-area:hover { border-color: rgba(252,211,77,0.6); background: rgba(252,211,77,0.04); }
+.upload-area-text { font-size: 12px; color: #B45309; opacity: 0.7; }
+.upload-limit { font-size: 10px; color: #9ca3af; margin-top: 4px; }
+
+/* 编辑按钮 */
+.edit-btn {
+  width: 100%; margin-top: 8px; padding: 12px;
+  background: linear-gradient(135deg, #FCD34D, #F59E0B);
+  border: none; border-radius: 10px;
+  color: #422006; font-weight: 600; font-size: 14px;
+  cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+}
+.edit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(252,211,77,0.35); }
+
+/* 编辑表单 */
+.editor-input, .editor-textarea {
+  width: 100%; padding: 8px 10px;
+  border: 1px solid rgba(0,0,0,0.12); border-radius: 6px;
+  font-size: 13px; font-family: inherit;
+  background: rgba(0,0,0,0.02); color: #374151;
+  outline: none; transition: border-color .25s;
+}
+.editor-input:focus, .editor-textarea:focus { border-color: #FCD34D; }
+.editor-textarea { resize: vertical; min-height: 60px; line-height: 1.6; }
+.editor-actions { display: flex; gap: 8px; margin-top: 14px; }
+.btn-cancel, .btn-save {
+  flex: 1; padding: 10px; border-radius: 8px; font-size: 13px;
+  cursor: pointer; border: none; font-weight: 500; transition: all .2s;
+}
+.btn-cancel { background: #f3f4f6; color: #6b7280; }
+.btn-cancel:hover { background: #e5e7eb; }
+.btn-save { background: linear-gradient(135deg, #FCD34D, #F59E0B); color: #422006; }
+.btn-save:hover { box-shadow: 0 4px 14px rgba(252,211,77,0.4); }
+
+/* 遮罩 */
+.modal-mask {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.35); backdrop-filter: blur(4px);
+  opacity: 0; visibility: hidden;
+  transition: all 0.3s ease; z-index: 99;
+}
+.modal-mask.show { opacity: 1; visibility: visible; }
+
+/* 底部 */
+.footer-slogan {
+  text-align: center; margin-top: 24px;
+  color: rgba(252,211,77,0.5); font-size: 13px;
+  line-height: 2; padding: 0 20px 36px; letter-spacing: 1px;
+}
+
+/* 保存提示 */
+.save-toast {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 12px 28px; border-radius: 10px;
+  background: rgba(255,255,255,0.95);
+  color: #16a34a; font-size: 14px; font-weight: 500;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s; z-index: 200;
+}
+.save-toast.show { opacity: 1; }
+.save-toast.error { color: #dc2626; }
+
+#fileInput { display: none; }
+
+@media (max-width: 768px) {
+  .sky-title { font-size: 18px; padding-top: 24px; }
+  .star-field { height: 55vh; }
+}
+</style>
+</head>
+<body>
+
+<h1 class="sky-title">✦ 灵感星图 ✦</h1>
+<p class="sky-subtitle">让每一次表达，都在这里留下一颗闪烁的星星</p>
+
+<div class="star-field" id="starField"></div>
+
+<div class="modal-mask" id="modalMask"></div>
+<div class="quote-modal" id="quoteModal">
+  <div id="modalBody"></div>
+</div>
+
+<div class="save-toast" id="saveToast"></div>
+<input type="file" id="fileInput" accept=".ppt,.pptx,.pdf,.doc,.docx,.jpg,.png" multiple>
+
+<div class="footer-slogan">
+  仰观宇宙之大，俯察品类之盛
+</div>
+
+<script>
+// ==================== 表情 ====================
+const EXPRESSIONS = ['😊','😄','😉','🤩','😏','😁','🥳','😇'];
+
+// ==================== 数据 ====================
+function generateStudents() {
+  const saved = localStorage.getItem('starMapData');
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    // 兼容旧数据：ppt 从字符串转数组
+    parsed.forEach(s => {
+      if (typeof s.ppt === 'string') s.ppt = s.ppt ? [s.ppt] : [];
+      if (!Array.isArray(s.ppt)) s.ppt = [];
+    });
+    return parsed;
+  }
+
+  const firstNames = '子涵雨桐欣怡子轩宇航梦琪天宇浩然诗涵一诺艺馨俊杰沐辰梓涵欣妍博文雨泽可馨皓宇瑾瑜思源若曦梓萱浩宇梦瑶睿渊欣悦嘉怡子墨宇轩梓豪一凡梓睿浩轩铭泽锦程煜城翊宁'.split('');
+  const lastNames = '李王张刘陈杨赵黄周吴徐孙胡朱高林何郭马罗梁宋郑谢韩唐冯于董萧程曹袁邓许傅沈曾彭吕苏卢蒋蔡贾丁魏薛叶阎余潘杜戴夏钟汪田任姜范方石姚谭廖邹熊金陆郝孔白崔康毛邱秦江史顾侯邵孟龙万段雷钱汤尹黎易常武乔贺赖龚文'.split('');
+
+  const students = [];
+  for (let i = 0; i < 110; i++) {
+    const fn = firstNames[i % firstNames.length];
+    const ln = lastNames[(i * 3) % lastNames.length];
+    students.push({
+      id: `S${String(i+1).padStart(3,'0')}`,
+      name: ln + fn,
+      class: '高一（3）班',
+      report: '',
+      overview: '',
+      quote: '',
+      author: '',
+      source: '',
+      ppt: [],           // 多文件数组，最多5个
+      featured: false,
+      face: EXPRESSIONS[i % EXPRESSIONS.length],
+      size: Math.random() > 0.75 ? (Math.random() > 0.5 ? 36 : 30) : 24
+    });
+  }
+  localStorage.setItem('starMapData', JSON.stringify(students));
+  return students;
+}
+
+let students = generateStudents();
+function saveData() { localStorage.setItem('starMapData', JSON.stringify(students)); }
+
+// ==================== 星星 SVG ====================
+function starSVG(size, face) {
+  const cx = size/2, cy = size/2;
+  const outerR = size/2 - 2;
+  const innerR = outerR * 0.42;
+  let d = '';
+  for (let i = 0; i < 10; i++) {
+    const angle = Math.PI/2 + i * Math.PI/5;
+    const r = i % 2 === 0 ? outerR : innerR;
+    const x = cx + r * Math.cos(angle);
+    const y = cy - r * Math.sin(angle);
+    d += (i === 0 ? 'M' : 'L') + `${x.toFixed(1)},${y.toFixed(1)} `;
+  }
+  d += 'Z';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <defs>
+      <linearGradient id="gold${size}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FEF3C7"/><stop offset="50%" stop-color="#FCD34D"/><stop offset="100%" stop-color="#D97706"/>
+      </linearGradient>
+      <filter id="glow${size}"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <path d="${d}" fill="url(#gold${size})" stroke="#B45309" stroke-width="0.5" filter="url(#glow${size})"/>
+    <text x="50%" y="58%" text-anchor="middle" font-size="${size*0.38}" style="pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.15))">${face}</text>
+  </svg>`;
+}
+
+// ==================== 渲染星星 ====================
+const field = document.getElementById('starField');
+let currentIdx = -1;
+let isEditing = false;
+
+function renderStars() {
+  field.innerHTML = '';
+  const fw = field.clientWidth, fh = field.clientHeight;
+
+  // 背景微星
+  for (let i = 0; i < 60; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'bg-twinkle';
+    dot.style.left = Math.random() * fw + 'px';
+    dot.style.top = Math.random() * fh + 'px';
+    dot.style.animationDelay = `${Math.random()*3}s`;
+    dot.style.width = dot.style.height = (Math.random()*2+1) + 'px';
+    field.appendChild(dot);
+  }
+
+  const occupied = [];
+  students.forEach((s, i) => {
+    const star = document.createElement('div');
+    star.className = `star ${s.featured ? 'featured' : ''}`;
+    star.innerHTML = starSVG(s.size, s.face);
+    star.style.animationDelay = `${i * 0.08}s, ${Math.random()*2}s`;
+
+    let x, y, attempts = 0;
+    do {
+      x = Math.random() * (fw - s.size - 20) + 10;
+      y = Math.random() * (fh - s.size - 40) + 20;
+      attempts++;
+    } while (occupied.some(o => Math.sqrt((x-o.x)**2 + (y-o.y)**2) < 38) && attempts < 30);
+    occupied.push({ x, y });
+
+    star.style.left = x + 'px';
+    star.style.top = y + 'px';
+    star.addEventListener('click', () => openModal(i));
+    field.appendChild(star);
+  });
+}
+
+// ==================== 模态框 ====================
+const modal = document.getElementById('quoteModal');
+const mask = document.getElementById('modalMask');
+const modalBody = document.getElementById('modalBody');
+
+function openModal(i) {
+  currentIdx = i; isEditing = false; renderModal();
+  modal.classList.add('show'); mask.classList.add('show');
+}
+function closeModal() {
+  modal.classList.remove('show'); mask.classList.remove('show');
+  currentIdx = -1;
+}
+mask.addEventListener('click', closeModal);
+
+function renderModal() {
+  if (currentIdx < 0) return;
+  const s = students[currentIdx];
+
+  if (!isEditing) {
+    // 查看模式
+    const filesHtml = s.ppt.length > 0
+      ? `<div class="file-list">${s.ppt.map((f, fi) => `
+          <div class="file-item">
+            <span class="file-item-name">📎 ${escapeHtml(f)}</span>
+            <span class="file-item-actions">
+              <button class="file-action-btn" onclick="event.stopPropagation();alert('预览：${escapeJs(f)}')">预览</button>
+              <button class="file-action-btn" onclick="event.stopPropagation();alert('下载：${escapeJs(f)}')">下载</button>
+            </span>
+          </div>`).join('')}
+        </div>`
+      : '<span class="empty-hint">暂无文件</span>';
+
+    modalBody.innerHTML = `
+      <div style="text-align:right;margin-bottom:8px;">
+        <button class="edit-btn" style="width:auto;padding:6px 16px;font-size:12px;" onclick="startEdit()">编辑资料 ✏️</button>
+      </div>
+      <div class="info-module"><div class="module-label">✦ 姓名</div><div class="module-value name">${escapeHtml(s.name)}</div></div>
+      <div class="info-module"><div class="module-label">✦ 班级</div><div class="module-value">${escapeHtml(s.class)}</div></div>
+      <div class="info-module"><div class="module-label">✦ 主题报告标题</div><div class="module-value report">${s.report ? '《'+escapeHtml(s.report)+'》' : '<span class="empty-hint">未填写</span>'}</div></div>
+      <div class="info-module"><div class="module-label">✦ 主题报告概括</div><div class="module-value">${s.overview || '<span class="empty-hint">未填写</span>'}</div></div>
+      <div class="info-module"><div class="module-label">✦ 代表性句子</div><div class="module-value quote">${s.quote ? '"'+escapeHtml(s.quote)+'"<br><span style="font-size:11px;color:#9ca3af;font-style:normal;">—— '+escapeHtml(s.author)+(s.source ? ' 《'+escapeHtml(s.source)+'》' : '')+'</span>' : '<span class="empty-hint">未填写</span>'}</div></div>
+      <div class="info-module">
+        <div class="module-label">✦ 文件（${s.ppt.length}/5）</div>
+        ${filesHtml}
+        <div class="upload-area" onclick="event.stopPropagation();triggerFileUpload()">
+          <div class="upload-area-text">📎 点击上传文件</div>
+          <div class="upload-limit">支持 PPT / PDF / Word / 图片，最多 5 个</div>
+        </div>
+      </div>
+    `;
+  } else {
+    // 编辑模式
+    const editFilesHtml = s.ppt.length > 0
+      ? `<div class="file-list">${s.ppt.map((f, fi) => `
+          <div class="file-item">
+            <span class="file-item-name">📎 ${escapeHtml(f)}</span>
+            <span class="file-item-actions">
+              <button class="file-action-btn remove" onclick="event.stopPropagation();removeFile(${fi})">删除</button>
+            </span>
+          </div>`).join('')}</div>`
+      : '<span class="empty-hint">暂无文件</span>';
+
+    const canAddMore = s.ppt.length < 5;
+
+    modalBody.innerHTML = `
+      <div class="module-label" style="margin-bottom:12px;">✏️ 编辑资料</div>
+      <div class="info-module"><div class="module-label">姓名</div><input class="editor-input" id="eName" value="${escapeAttr(s.name)}"></div>
+      <div class="info-module"><div class="module-label">班级</div><input class="editor-input" id="eClass" value="${escapeAttr(s.class)}"></div>
+      <div class="info-module"><div class="module-label">主题报告标题</div><input class="editor-input" id="eReport" value="${escapeAttr(s.report)}" placeholder="例：我与汪曾祺"></div>
+      <div class="info-module"><div class="module-label">主题报告概括</div><textarea class="editor-textarea" id="eOverview" placeholder="写下这段阅读的概括...">${escapeHtml(s.overview)}</textarea></div>
+      <div class="info-module"><div class="module-label">代表性句子</div><textarea class="editor-textarea" id="eQuote" placeholder="写下你最喜欢的句子...">${escapeHtml(s.quote)}</textarea></div>
+      <div class="info-module"><div class="module-label">作者</div><input class="editor-input" id="eAuthor" value="${escapeAttr(s.author)}" placeholder="作者名"></div>
+      <div class="info-module"><div class="module-label">出处</div><input class="editor-input" id="eSource" value="${escapeAttr(s.source)}" placeholder="书名/文章名"></div>
+      <div class="info-module">
+        <div class="module-label">文件（${s.ppt.length}/5）</div>
+        ${editFilesHtml}
+        ${canAddMore ? `<div class="upload-area" onclick="event.stopPropagation();triggerFileUpload()">
+          <div class="upload-area-text">📎 点击添加文件（还可上传 ${5 - s.ppt.length} 个）</div>
+          <div class="upload-limit">支持 PPT / PDF / Word / 图片</div>
+        </div>` : '<div class="upload-limit" style="margin-top:6px;">已达到最大文件数量（5个）</div>'}
+      </div>
+      <div class="editor-actions">
+        <button class="btn-cancel" onclick="closeModal()">取消</button>
+        <button class="btn-save" onclick="saveEdit()">保存</button>
+      </div>
+    `;
+  }
+}
+
+function startEdit() { isEditing = true; renderModal(); }
+
+function saveEdit() {
+  const s = students[currentIdx];
+  s.name = document.getElementById('eName').value.trim() || s.name;
+  s.class = document.getElementById('eClass').value.trim() || s.class;
+  s.report = document.getElementById('eReport').value.trim();
+  s.overview = document.getElementById('eOverview').value.trim();
+  s.quote = document.getElementById('eQuote').value.trim();
+  s.author = document.getElementById('eAuthor').value.trim();
+  s.source = document.getElementById('eSource').value.trim();
+  saveData();
+  showToast('✓ 已保存');
+  isEditing = false;
+  renderModal();
+  renderStars();
+}
+
+// ==================== 文件上传（多文件，最多5个） ====================
+function triggerFileUpload() {
+  const s = students[currentIdx];
+  if (s.ppt.length >= 5) { showToast('最多只能上传 5 个文件', 'error'); return; }
+  document.getElementById('fileInput').click();
+}
+
+function removeFile(index) {
+  students[currentIdx].ppt.splice(index, 1);
+  saveData();
+  renderModal();
+  showToast('✓ 已删除');
+}
+
+document.getElementById('fileInput').addEventListener('change', e => {
+  const files = Array.from(e.target.files);
+  if (files.length === 0) return;
+
+  const s = students[currentIdx];
+  const remaining = 5 - s.ppt.length;
+
+  if (remaining <= 0) { showToast('最多只能上传 5 个文件', 'error'); e.target.value = ''; return; }
+
+  // 校验文件类型
+  const allowedExt = /\.(ppt|pptx|pdf|doc|docx|jpg|jpeg|png)$/i;
+  const validFiles = files.filter(f => allowedExt.test(f.name));
+  if (validFiles.length < files.length) { showToast('部分文件格式不支持，已跳过', 'error'); }
+
+  // 取前 remaining 个
+  const toAdd = validFiles.slice(0, remaining);
+  toAdd.forEach(f => s.ppt.push(f.name));
+  saveData();
+  showToast(`✓ 已添加 ${toAdd.length} 个文件`);
+  renderModal();
+  e.target.value = '';
+});
+
+// ==================== 工具函数 ====================
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('saveToast');
+  t.textContent = msg;
+  t.className = `save-toast show ${type === 'error' ? 'error' : ''}`;
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escapeAttr(str) {
+  if (!str) return '';
+  return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function escapeJs(str) {
+  if (!str) return '';
+  return str.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"');
+}
+
+// ==================== 初始化 ====================
+renderStars();
+window.addEventListener('resize', () => { renderStars(); });
+</script>
+</body>
+</html>
