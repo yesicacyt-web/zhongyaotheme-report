@@ -6,7 +6,6 @@
 <title>灵感星图 | 让每一次表达，都在这里留下一颗闪烁的星星</title>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
 body {
   min-height: 100vh;
   background: linear-gradient(180deg, #1a1040 0%, #2d1b69 30%, #1b2a5e 60%, #0f1d3a 100%);
@@ -14,7 +13,6 @@ body {
   overflow-x: hidden;
   color: #fff;
 }
-
 /* ========== 顶部 ========== */
 .sky-title {
   text-align: center;
@@ -32,7 +30,79 @@ body {
   margin-bottom: 20px;
   letter-spacing: 3px;
 }
-
+/* ========== 搜索框 ========== */
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 auto 22px;
+  max-width: 520px;
+  padding: 0 20px;
+}
+.search-input-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 15px;
+  color: rgba(252,211,77,0.6);
+  pointer-events: none;
+  z-index: 1;
+}
+.search-input {
+  width: 100%;
+  padding: 11px 14px 11px 40px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(252,211,77,0.25);
+  border-radius: 24px;
+  color: #FEF3C7;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+.search-input::placeholder {
+  color: rgba(252,211,77,0.4);
+  font-size: 13px;
+}
+.search-input:focus {
+  border-color: rgba(252,211,77,0.6);
+  background: rgba(255,255,255,0.12);
+  box-shadow: 0 0 0 3px rgba(252,211,77,0.1);
+}
+.search-clear {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: rgba(252,211,77,0.5);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 50%;
+  display: none;
+  transition: all 0.2s;
+}
+.search-clear:hover { color: rgba(252,211,77,0.9); background: rgba(252,211,77,0.1); }
+.search-clear.visible { display: block; }
+.search-result-info {
+  text-align: center;
+  color: rgba(252,211,77,0.55);
+  font-size: 12px;
+  margin-bottom: 14px;
+  letter-spacing: 1px;
+  min-height: 16px;
+}
+.search-result-info .highlight-count {
+  color: #FCD34D;
+  font-weight: 600;
+}
 /* ========== 星空画布 ========== */
 .star-field {
   width: 94%;
@@ -43,7 +113,6 @@ body {
   border-bottom: 1px dashed rgba(252,211,77,0.15);
   overflow: hidden;
 }
-
 .bg-twinkle {
   position: absolute;
   width: 2px; height: 2px;
@@ -55,7 +124,19 @@ body {
   0%, 100% { opacity: 0.2; }
   50% { opacity: 0.8; }
 }
-
+/* 无结果提示 */
+.no-result {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: rgba(252,211,77,0.5);
+  font-size: 15px;
+  letter-spacing: 2px;
+  display: none;
+}
+.no-result.show { display: block; }
+.no-result-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.6; }
 /* ========== 星星 ========== */
 .star {
   position: absolute;
@@ -80,7 +161,23 @@ body {
   font-size: 14px;
   animation: twinkle 1.5s ease-in-out infinite;
 }
-
+/* 搜索匹配高亮 */
+.star.match-highlight {
+  filter: drop-shadow(0 0 18px rgba(252,211,77,0.9));
+  z-index: 5;
+}
+.star.match-highlight::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(252,211,77,0.6);
+  animation: matchPulse 1.8s ease-in-out infinite;
+}
+@keyframes matchPulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.15); }
+}
 @keyframes bloom {
   0% { opacity: 0; transform: translateY(30px) scale(0.3); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
@@ -93,9 +190,7 @@ body {
   0%, 100% { filter: drop-shadow(0 0 4px rgba(252,211,77,0.5)); }
   50% { filter: drop-shadow(0 0 16px rgba(255,255,255,0.9)); }
 }
-
 .star svg { display: block; }
-
 /* ========== 卡片 ========== */
 .quote-modal {
   position: fixed;
@@ -121,7 +216,6 @@ body {
   visibility: visible;
   transform: translate(-50%, -50%) scale(1);
 }
-
 .info-module {
   margin-bottom: 18px;
   padding-bottom: 14px;
@@ -154,7 +248,6 @@ body {
   line-height: 1.8;
 }
 .empty-hint { color: #c0c0c0; font-style: italic; font-size: 13px; }
-
 /* 文件列表 */
 .file-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
 .file-item {
@@ -175,7 +268,6 @@ body {
 .file-action-btn:hover { background: rgba(252,211,77,0.15); }
 .file-action-btn.remove { color: #dc2626; border-color: rgba(220,38,38,0.2); }
 .file-action-btn.remove:hover { background: rgba(220,38,38,0.08); }
-
 .upload-area {
   border: 1.5px dashed rgba(252,211,77,0.35);
   border-radius: 10px;
@@ -188,7 +280,6 @@ body {
 .upload-area:hover { border-color: rgba(252,211,77,0.6); background: rgba(252,211,77,0.04); }
 .upload-area-text { font-size: 12px; color: #B45309; opacity: 0.7; }
 .upload-limit { font-size: 10px; color: #9ca3af; margin-top: 4px; }
-
 /* 编辑按钮 */
 .edit-btn {
   width: 100%; margin-top: 8px; padding: 12px;
@@ -198,7 +289,6 @@ body {
   cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
 }
 .edit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(252,211,77,0.35); }
-
 /* 编辑表单 */
 .editor-input, .editor-textarea {
   width: 100%; padding: 8px 10px;
@@ -218,7 +308,6 @@ body {
 .btn-cancel:hover { background: #e5e7eb; }
 .btn-save { background: linear-gradient(135deg, #FCD34D, #F59E0B); color: #422006; }
 .btn-save:hover { box-shadow: 0 4px 14px rgba(252,211,77,0.4); }
-
 /* 遮罩 */
 .modal-mask {
   position: fixed; inset: 0;
@@ -227,14 +316,12 @@ body {
   transition: all 0.3s ease; z-index: 99;
 }
 .modal-mask.show { opacity: 1; visibility: visible; }
-
 /* 底部 */
 .footer-slogan {
   text-align: center; margin-top: 24px;
   color: rgba(252,211,77,0.5); font-size: 13px;
   line-height: 2; padding: 0 20px 36px; letter-spacing: 1px;
 }
-
 /* 保存提示 */
 .save-toast {
   position: fixed; top: 50%; left: 50%;
@@ -248,38 +335,46 @@ body {
 }
 .save-toast.show { opacity: 1; }
 .save-toast.error { color: #dc2626; }
-
 #fileInput { display: none; }
-
 @media (max-width: 768px) {
   .sky-title { font-size: 18px; padding-top: 24px; }
   .star-field { height: 55vh; }
+  .search-bar { max-width: 100%; }
 }
 </style>
 </head>
 <body>
-
 <h1 class="sky-title">✦ 灵感星图 ✦</h1>
 <p class="sky-subtitle">让每一次表达，都在这里留下一颗闪烁的星星</p>
 
-<div class="star-field" id="starField"></div>
+<!-- ========== 搜索栏 ========== -->
+<div class="search-bar">
+  <div class="search-input-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-input" id="searchInput" placeholder="搜索学生姓名或主题报告标题..." autocomplete="off">
+    <button class="search-clear" id="searchClear" title="清除">✕</button>
+  </div>
+</div>
+<div class="search-result-info" id="searchResultInfo"></div>
 
+<div class="star-field" id="starField">
+  <div class="no-result" id="noResult">
+    <div class="no-result-icon">🌌</div>
+    <div>没有找到匹配的星星</div>
+  </div>
+</div>
 <div class="modal-mask" id="modalMask"></div>
 <div class="quote-modal" id="quoteModal">
   <div id="modalBody"></div>
 </div>
-
 <div class="save-toast" id="saveToast"></div>
 <input type="file" id="fileInput" accept=".ppt,.pptx,.pdf,.doc,.docx,.jpg,.png" multiple>
-
 <div class="footer-slogan">
-  仰观宇宙之大，俯察品类之盛
+  让每一次表达，都在这里留下一颗闪烁的星星
 </div>
-
 <script>
 // ==================== 表情 ====================
 const EXPRESSIONS = ['😊','😄','😉','🤩','😏','😁','🥳','😇'];
-
 // ==================== 数据 ====================
 function generateStudents() {
   const saved = localStorage.getItem('starMapData');
@@ -292,10 +387,8 @@ function generateStudents() {
     });
     return parsed;
   }
-
   const firstNames = '子涵雨桐欣怡子轩宇航梦琪天宇浩然诗涵一诺艺馨俊杰沐辰梓涵欣妍博文雨泽可馨皓宇瑾瑜思源若曦梓萱浩宇梦瑶睿渊欣悦嘉怡子墨宇轩梓豪一凡梓睿浩轩铭泽锦程煜城翊宁'.split('');
   const lastNames = '李王张刘陈杨赵黄周吴徐孙胡朱高林何郭马罗梁宋郑谢韩唐冯于董萧程曹袁邓许傅沈曾彭吕苏卢蒋蔡贾丁魏薛叶阎余潘杜戴夏钟汪田任姜范方石姚谭廖邹熊金陆郝孔白崔康毛邱秦江史顾侯邵孟龙万段雷钱汤尹黎易常武乔贺赖龚文'.split('');
-
   const students = [];
   for (let i = 0; i < 110; i++) {
     const fn = firstNames[i % firstNames.length];
@@ -318,10 +411,8 @@ function generateStudents() {
   localStorage.setItem('starMapData', JSON.stringify(students));
   return students;
 }
-
 let students = generateStudents();
 function saveData() { localStorage.setItem('starMapData', JSON.stringify(students)); }
-
 // ==================== 星星 SVG ====================
 function starSVG(size, face) {
   const cx = size/2, cy = size/2;
@@ -347,16 +438,87 @@ function starSVG(size, face) {
     <text x="50%" y="58%" text-anchor="middle" font-size="${size*0.38}" style="pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.15))">${face}</text>
   </svg>`;
 }
+// ==================== 搜索功能 ====================
+let searchKeyword = '';
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+const searchResultInfo = document.getElementById('searchResultInfo');
+const noResult = document.getElementById('noResult');
+
+function isStudentMatch(s, keyword) {
+  if (!keyword) return true;
+  const kw = keyword.toLowerCase().trim();
+  // 匹配学生姓名
+  if (s.name && s.name.toLowerCase().includes(kw)) return true;
+  // 匹配主题报告标题
+  if (s.report && s.report.toLowerCase().includes(kw)) return true;
+  return false;
+}
+
+function getMatchedStudents() {
+  if (!searchKeyword.trim()) return students;
+  return students.filter(s => isStudentMatch(s, searchKeyword));
+}
+
+function updateSearchUI() {
+  const kw = searchKeyword.trim();
+  if (kw) {
+    searchClear.classList.add('visible');
+    const matched = getMatchedStudents();
+    const total = students.length;
+    searchResultInfo.innerHTML = `搜索 "<span class="highlight-count">${escapeHtml(kw)}</span>" — 找到 <span class="highlight-count">${matched.length}</span> / ${total} 颗星星`;
+    if (matched.length === 0) {
+      noResult.classList.add('show');
+    } else {
+      noResult.classList.remove('show');
+    }
+  } else {
+    searchClear.classList.remove('visible');
+    searchResultInfo.innerHTML = '';
+    noResult.classList.remove('show');
+  }
+}
+
+// 防抖搜索
+let searchTimer = null;
+searchInput.addEventListener('input', e => {
+  searchKeyword = e.target.value;
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    updateSearchUI();
+    renderStars();
+  }, 180);
+});
+
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  searchKeyword = '';
+  updateSearchUI();
+  renderStars();
+  searchInput.focus();
+});
+
+// 回车快速定位第一个匹配
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const matched = getMatchedStudents();
+    if (matched.length > 0) {
+      const firstMatch = matched[0];
+      const idx = students.indexOf(firstMatch);
+      if (idx >= 0) openModal(idx);
+    }
+  }
+});
 
 // ==================== 渲染星星 ====================
 const field = document.getElementById('starField');
 let currentIdx = -1;
 let isEditing = false;
-
 function renderStars() {
+  // 保留 no-result 元素
   field.innerHTML = '';
+  field.appendChild(noResult);
   const fw = field.clientWidth, fh = field.clientHeight;
-
   // 背景微星
   for (let i = 0; i < 60; i++) {
     const dot = document.createElement('div');
@@ -367,14 +529,14 @@ function renderStars() {
     dot.style.width = dot.style.height = (Math.random()*2+1) + 'px';
     field.appendChild(dot);
   }
-
+  const displayStudents = getMatchedStudents();
   const occupied = [];
-  students.forEach((s, i) => {
+  displayStudents.forEach((s, i) => {
     const star = document.createElement('div');
-    star.className = `star ${s.featured ? 'featured' : ''}`;
+    const isMatch = searchKeyword.trim() && isStudentMatch(s, searchKeyword);
+    star.className = `star ${s.featured ? 'featured' : ''} ${isMatch ? 'match-highlight' : ''}`;
     star.innerHTML = starSVG(s.size, s.face);
     star.style.animationDelay = `${i * 0.08}s, ${Math.random()*2}s`;
-
     let x, y, attempts = 0;
     do {
       x = Math.random() * (fw - s.size - 20) + 10;
@@ -382,19 +544,18 @@ function renderStars() {
       attempts++;
     } while (occupied.some(o => Math.sqrt((x-o.x)**2 + (y-o.y)**2) < 38) && attempts < 30);
     occupied.push({ x, y });
-
     star.style.left = x + 'px';
     star.style.top = y + 'px';
-    star.addEventListener('click', () => openModal(i));
+    // 用原始 students 数组的索引打开模态框
+    const realIdx = students.indexOf(s);
+    star.addEventListener('click', () => openModal(realIdx));
     field.appendChild(star);
   });
 }
-
 // ==================== 模态框 ====================
 const modal = document.getElementById('quoteModal');
 const mask = document.getElementById('modalMask');
 const modalBody = document.getElementById('modalBody');
-
 function openModal(i) {
   currentIdx = i; isEditing = false; renderModal();
   modal.classList.add('show'); mask.classList.add('show');
@@ -404,11 +565,9 @@ function closeModal() {
   currentIdx = -1;
 }
 mask.addEventListener('click', closeModal);
-
 function renderModal() {
   if (currentIdx < 0) return;
   const s = students[currentIdx];
-
   if (!isEditing) {
     // 查看模式
     const filesHtml = s.ppt.length > 0
@@ -422,7 +581,6 @@ function renderModal() {
           </div>`).join('')}
         </div>`
       : '<span class="empty-hint">暂无文件</span>';
-
     modalBody.innerHTML = `
       <div style="text-align:right;margin-bottom:8px;">
         <button class="edit-btn" style="width:auto;padding:6px 16px;font-size:12px;" onclick="startEdit()">编辑资料 ✏️</button>
@@ -452,9 +610,7 @@ function renderModal() {
             </span>
           </div>`).join('')}</div>`
       : '<span class="empty-hint">暂无文件</span>';
-
     const canAddMore = s.ppt.length < 5;
-
     modalBody.innerHTML = `
       <div class="module-label" style="margin-bottom:12px;">✏️ 编辑资料</div>
       <div class="info-module"><div class="module-label">姓名</div><input class="editor-input" id="eName" value="${escapeAttr(s.name)}"></div>
@@ -479,9 +635,7 @@ function renderModal() {
     `;
   }
 }
-
 function startEdit() { isEditing = true; renderModal(); }
-
 function saveEdit() {
   const s = students[currentIdx];
   s.name = document.getElementById('eName').value.trim() || s.name;
@@ -496,36 +650,31 @@ function saveEdit() {
   isEditing = false;
   renderModal();
   renderStars();
+  // 保存后刷新搜索结果（因为姓名/报告标题可能变了）
+  updateSearchUI();
 }
-
 // ==================== 文件上传（多文件，最多5个） ====================
 function triggerFileUpload() {
   const s = students[currentIdx];
   if (s.ppt.length >= 5) { showToast('最多只能上传 5 个文件', 'error'); return; }
   document.getElementById('fileInput').click();
 }
-
 function removeFile(index) {
   students[currentIdx].ppt.splice(index, 1);
   saveData();
   renderModal();
   showToast('✓ 已删除');
 }
-
 document.getElementById('fileInput').addEventListener('change', e => {
   const files = Array.from(e.target.files);
   if (files.length === 0) return;
-
   const s = students[currentIdx];
   const remaining = 5 - s.ppt.length;
-
   if (remaining <= 0) { showToast('最多只能上传 5 个文件', 'error'); e.target.value = ''; return; }
-
   // 校验文件类型
   const allowedExt = /\.(ppt|pptx|pdf|doc|docx|jpg|jpeg|png)$/i;
   const validFiles = files.filter(f => allowedExt.test(f.name));
   if (validFiles.length < files.length) { showToast('部分文件格式不支持，已跳过', 'error'); }
-
   // 取前 remaining 个
   const toAdd = validFiles.slice(0, remaining);
   toAdd.forEach(f => s.ppt.push(f.name));
@@ -534,7 +683,6 @@ document.getElementById('fileInput').addEventListener('change', e => {
   renderModal();
   e.target.value = '';
 });
-
 // ==================== 工具函数 ====================
 function showToast(msg, type = 'success') {
   const t = document.getElementById('saveToast');
@@ -554,7 +702,6 @@ function escapeJs(str) {
   if (!str) return '';
   return str.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"');
 }
-
 // ==================== 初始化 ====================
 renderStars();
 window.addEventListener('resize', () => { renderStars(); });
